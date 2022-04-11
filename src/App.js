@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 
 function App() {
@@ -6,14 +6,25 @@ function App() {
   const [searchResults, setSearchResults] = useState([]);
   const [username, setUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [repos, setRepos] = useState([]);
 
+  useEffect(() => {
+    if (!username) return;
+
+    fetch(`https://api.github.com/users/${username}/repos?type=public&sort=updated&per_page=100`)
+      .then((response) => response.json())
+      .then((data) => {
+        const result = data.sort((a, b) => (a.stargazers_count < b.stargazers_count ? 1 : -1));
+        setRepos(data);
+      });
+  }, [username]);
+  
   const handleSearch = async () => {
+    if (!query) return;
     setIsLoading(true);
     await fetch(`https://api.github.com/search/users?q=${query}`)
       .then(response => response.json())
-      .then(data => {
-        setSearchResults(data.items);
-      });
+      .then((data) => setSearchResults(data.items));
     setIsLoading(false);
   }
 
@@ -43,7 +54,26 @@ function App() {
         </ul>
       </>)}
     </section>
-    <section className='repos'>Repositories</section>
+    <section className='repos'>
+      {username ? (
+        <>
+          <h1>Repositories of {username} : </h1>
+
+          { repos.length ? (
+            <ul>
+              {repos.map((repo) =>
+         
+                <li key={repo.id}>{repo.name} ({repo.stargazers_count})</li>
+              )}
+            </ul>
+          ) : (
+            "Building"
+          )}
+        </>
+      ) : (
+        <p>Search  for username </p>
+      )}
+    </section>
   </main >);
 }
 
