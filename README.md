@@ -1,6 +1,6 @@
 # github-client
 
-simple client to search for username of github
+simple client to search for username of github, using react to learn
 
 run: 
 ```yarn start```
