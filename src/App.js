@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import Loading from "../src/components/Loading/index";
 
 function App() {
   const [query, setQuery] = useState("");
@@ -36,7 +37,7 @@ function App() {
         placeholder='Username' />
       
       <button onClick={handleSearch} disabled={ isLoading }>
-        { isLoading ? "Searching..." : "Search"}
+        { isLoading ? <Loading/> : "Search"}
       </button>
 
       {!!searchResults.length && (<>
